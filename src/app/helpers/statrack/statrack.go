@@ -2,14 +2,21 @@ package statrack
 
 import (
 	"fmt"
+	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 //Configs is used to initialize how program should behavior
 type configs struct {
 	sites    []string
 	interval int64
+}
+
+type fetchResponse struct {
+	site    string
+	isAlive bool
 }
 
 //Global declaration
@@ -36,6 +43,46 @@ func InitializeConfigFromString(recieveArgs []string) {
 
 //LogSettings uses for logging the settings out
 func LogSettings() {
-	fmt.Println("[SITES TO TRACK]: ", myConfigs.sites)
+	fmt.Println("[", len(myConfigs.sites), " SITES TO TRACK]: ", myConfigs.sites)
 	fmt.Printf("[INTERVAL]: %v seconds", myConfigs.interval/1000)
+}
+
+func isConnectionAliveFromLink(link string, c chan fetchResponse) {
+	_, err := http.Get(link)
+	if err != nil {
+		c <- fetchResponse{site: link, isAlive: false}
+		return
+	}
+	c <- fetchResponse{site: link, isAlive: true}
+}
+
+func generateOutputTextFromStatus(status bool) string {
+	var genStr string
+	switch status {
+	case true:
+		genStr = "Server is up [alive]"
+	case false:
+		genStr = "Server is down [not-alive]"
+	}
+	return genStr
+}
+
+//StartTrackingProcess uses for starting all of the process in tracking a website in interval
+func StartTrackingProcess() {
+	fmt.Println("[DEBUG]: Starting tracking . . .")
+
+	// Creating Channel
+	mainChannel := make(chan fetchResponse)
+
+	for _, link := range myConfigs.sites {
+		go isConnectionAliveFromLink(link, mainChannel)
+	}
+
+	for channelResponse := range mainChannel {
+		fmt.Println("[", channelResponse.site, "] => status: ", generateOutputTextFromStatus(channelResponse.isAlive))
+		go func(c fetchResponse) {
+			time.Sleep(time.Duration(myConfigs.interval/1000) * time.Second)
+			isConnectionAliveFromLink(c.site, mainChannel)
+		}(channelResponse)
+	}
 }
