@@ -1,6 +1,28 @@
 ## 🎓 site status tracker => using GO(golang)
 
-A tracker for checking the response status of the specific websites given thru runtime ( in -development )
+A tracker for checking the response status of the specific websites given thru runtime
+
+## ✨ Features
+
+- Track more than 1 website
+- Be able to provide the interval of each connection flush
+- Progressive Interface
+- User-friendly
+
+## 🚀 Getting Started
+
+1. **Run the script.**
+
+run the script and continue to the step that will be shown on the cmd
+
+```sh
+go run entry.go --site=http://google.com,http://twitter.com,http://doraemon.not.exist --interval=2000
+```
+
+## 🌟 Preview
+<span align="center">
+  <img src="https://i.imgur.com/p9EQBph.gif" alt="xJFDAQ.png" border="0" />
+</span>
 
 <p align="center">
   <b>: Contact me By :</b><br>
@@ -10,4 +32,3 @@ A tracker for checking the response status of the specific websites given thru r
   <br><br>
   <img src="https://media.giphy.com/media/h1u6yvxlVKmfLiSryA/giphy.gif" width="250" height="220">
 </p>
-
