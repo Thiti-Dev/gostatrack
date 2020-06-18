@@ -1,6 +1,7 @@
 package statrack
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -31,4 +32,10 @@ func InitializeConfigFromString(recieveArgs []string) {
 			}
 		}
 	}
+}
+
+//LogSettings uses for logging the settings out
+func LogSettings() {
+	fmt.Println("[SITES TO TRACK]: ", myConfigs.sites)
+	fmt.Printf("[INTERVAL]: %v seconds", myConfigs.interval/1000)
 }
