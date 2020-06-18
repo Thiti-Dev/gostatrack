@@ -17,7 +17,7 @@ func main() {
 	}
 	statrack.InitializeConfigFromString(os.Args[1:])
 	statrack.LogSettings()
-	fmt.Print("Proceed tracking? [TYPE y OR n] : ")
+	fmt.Print("\nProceed tracking? [TYPE y OR n] : ")
 	reader := bufio.NewReader(os.Stdin) //create new reader
 	actionString, _ := reader.ReadString('\n')
 	if strings.Contains(actionString, "y") {
