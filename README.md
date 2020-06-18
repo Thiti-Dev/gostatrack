@@ -20,9 +20,9 @@ go run entry.go --site=http://google.com,http://twitter.com,http://doraemon.not.
 ```
 
 ## 🌟 Preview
-<span align="center">
-  <img src="https://i.imgur.com/p9EQBph.gif" alt="xJFDAQ.png" border="0" />
-</span>
+<div style="text-align: center">
+  <img src="https://i.imgur.com/yrs5qD6.gif" alt="xJFDAQ.png" border="0" />
+</div>
 
 <p align="center">
   <b>: Contact me By :</b><br>
