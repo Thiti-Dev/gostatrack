@@ -21,6 +21,16 @@ type fetchResponse struct {
 
 //Global declaration
 var myConfigs configs
+var allSitesInSequence map[string]bool
+var totalCountOfFlushes = 0
+var isFirstTime = true
+
+func putSitesIntoSequencesMapped() {
+	allSitesInSequence = make(map[string]bool)
+	for _, site := range myConfigs.sites {
+		allSitesInSequence[site] = false
+	}
+}
 
 //InitializeConfigFromString uses for initializing the configs for futher usages
 func InitializeConfigFromString(recieveArgs []string) {
@@ -39,6 +49,7 @@ func InitializeConfigFromString(recieveArgs []string) {
 			}
 		}
 	}
+	putSitesIntoSequencesMapped()
 }
 
 //LogSettings uses for logging the settings out
@@ -60,17 +71,36 @@ func generateOutputTextFromStatus(status bool) string {
 	var genStr string
 	switch status {
 	case true:
-		genStr = "Server is up [alive]"
+		genStr = "Server is up [\u001b[32malive\u001b[0m]"
 	case false:
-		genStr = "Server is down [not-alive]"
+		genStr = "Server is down [\u001b[31mnot-alive\u001b[0m]"
 	}
 	return genStr
 }
 
+func outputTrackStatus() {
+	totalCountOfFlushes++
+	if !isFirstTime {
+		for i := -1; i < len(myConfigs.sites); i++ {
+			fmt.Printf("\033[A\033[K")
+		}
+	} else {
+		isFirstTime = false
+	}
+	fmt.Printf("[WAVE]: \u001b[33m%v\u001b[0m\n", totalCountOfFlushes/2)
+	for site, status := range allSitesInSequence {
+		fmt.Printf("[%v] => status : %v\n", site, generateOutputTextFromStatus(status))
+	}
+}
+
+func outputCLIHeader() {
+	print("\033[H\033[2J")
+	fmt.Println("[DEBUG]: Starting tracking . . .")
+}
+
 //StartTrackingProcess uses for starting all of the process in tracking a website in interval
 func StartTrackingProcess() {
-	fmt.Println("[DEBUG]: Starting tracking . . .")
-
+	outputCLIHeader()
 	// Creating Channel
 	mainChannel := make(chan fetchResponse)
 
@@ -79,7 +109,10 @@ func StartTrackingProcess() {
 	}
 
 	for channelResponse := range mainChannel {
-		fmt.Println("[", channelResponse.site, "] => status: ", generateOutputTextFromStatus(channelResponse.isAlive))
+		allSitesInSequence[channelResponse.site] = channelResponse.isAlive // Applied status in memory
+		//@Stdout-Phase
+		outputTrackStatus()
+		// ─────────────────────────────────────────────────────────────────
 		go func(c fetchResponse) {
 			time.Sleep(time.Duration(myConfigs.interval/1000) * time.Second)
 			isConnectionAliveFromLink(c.site, mainChannel)
