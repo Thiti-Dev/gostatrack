@@ -22,6 +22,7 @@ func main() {
 	actionString, _ := reader.ReadString('\n')
 	if strings.Contains(actionString, "y") {
 		// Proceed the tracker
+		statrack.StartTrackingProcess()
 	} else {
 		fmt.Println("Exiting .... ")
 		time.Sleep(1 * time.Second)
